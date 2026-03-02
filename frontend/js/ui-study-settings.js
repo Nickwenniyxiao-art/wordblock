@@ -5,49 +5,54 @@ const studyStats = document.getElementById('studyStats');
 const blockList = document.getElementById('blockList');
 
 function renderStudy() {
-  const entries = Object.entries(mockCollected);
+  const entries = Object.entries(collectedWords);
   if (entries.length === 0) {
     studyStats.innerHTML = '';
     blockList.innerHTML = `<div class="empty-state"><div class="empty-state-emoji">🧊</div><div class="empty-state-text">还没有词块</div><div class="empty-state-sub">收录更多单词，系统会自动创建词块</div></div>`;
     return;
   }
 
-  const blocks = {};
+  // Use blocksCache from backend
+  if (blocksCache.length === 0) {
+    studyStats.innerHTML = '';
+    blockList.innerHTML = `<div class="empty-state"><div class="empty-state-emoji">🧊</div><div class="empty-state-text">还没有词块</div><div class="empty-state-sub">收录更多单词，系统会自动创建词块</div></div>`;
+    return;
+  }
+
+  // Build block → words mapping from collectedWords
+  const blockWordsMap = {};
   entries.forEach(([word, info]) => {
-    if (!blocks[info.blockNumber]) blocks[info.blockNumber] = [];
-    blocks[info.blockNumber].push({ word, ...info });
+    const bn = info.blockNumber || 0;
+    if (!blockWordsMap[bn]) blockWordsMap[bn] = [];
+    blockWordsMap[bn].push({ word, ...info });
   });
 
-  const blockEntries = Object.entries(blocks).map(([num, words]) => ({
-    blockNum: parseInt(num),
-    words,
-    totalHits: words.reduce((s, w) => s + w.hitCount, 0),
-    wordCount: words.length,
-  }));
-
-  blockEntries.sort((a, b) => b.totalHits - a.totalHits);
-
   studyStats.innerHTML = `
-    <div class="stat-card"><div class="stat-value">${blockEntries.length}</div><div class="stat-label">词块总数</div></div>
+    <div class="stat-card"><div class="stat-value">${blocksCache.length}</div><div class="stat-label">词块总数</div></div>
     <div class="stat-card"><div class="stat-value">${entries.length}</div><div class="stat-label">总词汇</div></div>
     <div class="stat-card"><div class="stat-value">0</div><div class="stat-label">今日复习</div></div>
   `;
 
   let html = '';
-  blockEntries.forEach(block => {
-    const progress = block.blockNum === 1 ? 60 : block.blockNum === 2 ? 30 : Math.round((block.totalHits / (block.wordCount * 5)) * 100);
-    const clampedProgress = Math.min(95, Math.max(5, progress));
+  // Sort blocks by total hit count descending
+  const sortedBlocks = [...blocksCache].sort((a, b) => (b.total_hit_count || 0) - (a.total_hit_count || 0));
+
+  sortedBlocks.forEach(block => {
+    const wordCount = block.word_count || 0;
+    const totalHits = block.total_hit_count || 0;
+    const progress = wordCount > 0 ? Math.min(95, Math.max(5, Math.round((totalHits / (wordCount * 5)) * 100))) : 5;
+
     html += `
       <div class="block-card">
         <div class="block-card-header">
-          <div class="block-title">Block #${block.blockNum}</div>
-          <div class="block-heat-badge">🔥 热度 ${block.totalHits}</div>
+          <div class="block-title">Block #${block.block_number}</div>
+          <div class="block-heat-badge">🔥 热度 ${totalHits}</div>
         </div>
-        <div class="block-word-count">${block.wordCount} 个单词</div>
-        <div class="progress-track"><div class="progress-fill" style="width:${clampedProgress}%"></div></div>
+        <div class="block-word-count">${wordCount} 个单词</div>
+        <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
         <div class="block-btn-row">
-          <button class="btn-block-browse" onclick="openBlockBrowse(${block.blockNum})">📚 浏览单词</button>
-          <button class="btn-review" onclick="startReview(${block.blockNum})">▶ 开始复习</button>
+          <button class="btn-block-browse" onclick="openBlockBrowse(${block.block_number}, '${block.id}')">📚 浏览单词</button>
+          <button class="btn-review" onclick="startReview(${block.block_number}, '${block.id}')">▶ 开始复习</button>
         </div>
       </div>
     `;
@@ -56,16 +61,17 @@ function renderStudy() {
 }
 
 // ===== BLOCK BROWSE =====
-function openBlockBrowse(blockNum) {
+async function openBlockBrowse(blockNum, blockId) {
   document.getElementById('bbNavTitle').textContent = `Block #${blockNum}`;
-  const words = Object.entries(mockCollected)
+
+  // Get words from collectedWords by blockNumber
+  const words = Object.entries(collectedWords)
     .filter(([, info]) => info.blockNumber === blockNum)
     .map(([word, info]) => ({ word, ...info }));
 
   let html = '';
   words.forEach(w => {
-    const dictData = mockDictionary[w.word];
-    const phonetic = dictData ? dictData.phonetic : '';
+    const phonetic = w.phonetic || '';
     let defPreview = '';
     if (w.selectedDefinitions && w.selectedDefinitions.length > 0) {
       defPreview = w.selectedDefinitions.map(d => typeof d === 'object' ? d.def : d).join('；');
@@ -100,13 +106,32 @@ function closeBlockBrowse() {
 }
 
 // ===== REVIEW MODE =====
-function startReview(blockNum) {
-  const words = Object.entries(mockCollected)
+async function startReview(blockNum, blockId) {
+  const words = Object.entries(collectedWords)
     .filter(([, info]) => info.blockNumber === blockNum)
     .map(([word, info]) => ({ word, ...info }));
   if (words.length === 0) return;
 
-  reviewState = { blockNum, words, currentIndex: 0, revealed: false, knownCount: 0 };
+  // Start study session on backend
+  let sessionId = null;
+  try {
+    const session = await StudyAPI.start(blockId);
+    sessionId = session.id;
+  } catch (e) {
+    console.error('Failed to start study session:', e);
+    // Continue anyway with local review
+  }
+
+  reviewState = {
+    blockNum,
+    blockId,
+    sessionId,
+    words,
+    currentIndex: 0,
+    revealed: false,
+    knownCount: 0,
+    startTime: Date.now(),
+  };
   reviewOverlay.classList.add('open');
   renderReviewCard();
 }
@@ -118,6 +143,14 @@ function renderReviewCard() {
     document.getElementById('reviewProgressText').textContent = `${words.length}/${words.length}`;
     document.getElementById('reviewProgressFill').style.width = '100%';
     document.getElementById('reviewActions').style.display = 'none';
+
+    // Complete study session on backend
+    if (reviewState.sessionId) {
+      const duration = Math.round((Date.now() - reviewState.startTime) / 1000);
+      StudyAPI.complete(reviewState.sessionId, words.length, reviewState.knownCount, duration)
+        .catch(e => console.error('Failed to complete study session:', e));
+    }
+
     document.getElementById('reviewBody').innerHTML = `
       <div class="review-complete">
         <div class="review-complete-emoji">🎉</div>
@@ -179,6 +212,8 @@ document.getElementById('btnReviewClose').addEventListener('click', closeReview)
 function closeReview() {
   reviewOverlay.classList.remove('open');
   document.getElementById('reviewActions').style.display = 'flex';
+  // Refresh study page
+  renderStudy();
 }
 
 
@@ -187,26 +222,32 @@ function closeReview() {
 // ================================================
 function renderSettings() {
   const s = settingsState;
+  const user = currentUser;
+  const nickname = user ? (user.nickname || user.email?.split('@')[0] || '用户') : '用户';
+  const loginStatus = TokenManager.isLoggedIn();
 
   document.getElementById('settingsSections').innerHTML = `
     <!-- 账号与安全 -->
     <div>
       <div class="settings-section-title">账号与安全</div>
       <div class="settings-card">
-        <div class="settings-row" onclick="showToast('功能开发中')" style="cursor:pointer">
-          <div class="settings-avatar">用</div>
+        <div class="settings-row" style="cursor:pointer">
+          <div class="settings-avatar">${escHtml(nickname[0])}</div>
           <div class="settings-row-left" style="margin-left:12px;">
-            <div class="settings-row-label">头像和昵称</div>
-            <div class="settings-row-sublabel">点击修改个人信息</div>
+            <div class="settings-row-label">${escHtml(nickname)}</div>
+            <div class="settings-row-sublabel">${user ? escHtml(user.email) : '未登录'}</div>
           </div>
           <span class="settings-row-arrow">›</span>
         </div>
         <div class="settings-row">
           <div class="settings-row-left">
             <div class="settings-row-label">登录状态</div>
-            <div class="settings-row-sublabel">未登录</div>
+            <div class="settings-row-sublabel">${loginStatus ? '已登录' : '未登录'}</div>
           </div>
-          <button class="settings-login-btn" onclick="showToast('功能开发中')">去登录</button>
+          ${loginStatus
+            ? `<button class="settings-login-btn" onclick="handleLogout()" style="background:#FF3B30;color:#FFF">退出登录</button>`
+            : `<button class="settings-login-btn" onclick="showAuthPage();renderAuthPage()">去登录</button>`
+          }
         </div>
       </div>
     </div>
@@ -335,16 +376,24 @@ function renderSettings() {
   `;
 }
 
-function adjustBlockSize(delta) {
+async function adjustBlockSize(delta) {
   settingsState.blockSize = Math.min(50, Math.max(10, settingsState.blockSize + delta));
   const el = document.getElementById('blockSizeValue');
   if (el) el.textContent = settingsState.blockSize;
+  // Sync to backend
+  try {
+    await UserAPI.updateSettings({ block_size: settingsState.blockSize });
+  } catch (e) { console.error('Failed to save block_size:', e); }
 }
 
-function adjustDailyGoal(delta) {
+async function adjustDailyGoal(delta) {
   settingsState.dailyGoal = Math.min(100, Math.max(10, settingsState.dailyGoal + delta));
   const el = document.getElementById('dailyGoalValue');
   if (el) el.textContent = settingsState.dailyGoal;
+  // Sync to backend
+  try {
+    await UserAPI.updateSettings({ daily_goal: settingsState.dailyGoal });
+  } catch (e) { console.error('Failed to save daily_goal:', e); }
 }
 
 function toggleReminder() {
@@ -374,10 +423,29 @@ function openLangSelector(mode) {
   openSheetEl(langSheet);
 }
 
-function selectLang(lang) {
+async function selectLang(lang) {
   if (langSelectorMode === 'source') settingsState.sourceLang = lang;
   else settingsState.targetLang = lang;
   closeAllSheets();
   renderSettings();
   showToast(`已切换为 ${lang}`);
+  // Sync to backend
+  try {
+    await UserAPI.updateSettings({
+      source_lang: settingsState.sourceLang,
+      target_lang: settingsState.targetLang,
+    });
+  } catch (e) { console.error('Failed to save language settings:', e); }
+}
+
+async function handleLogout() {
+  if (!confirm('确定要退出登录吗？')) return;
+  try {
+    await AuthAPI.logout();
+  } catch { /* ignore */ }
+  collectedWords = {};
+  blocksCache = [];
+  currentUser = null;
+  showAuthPage();
+  renderAuthPage();
 }
