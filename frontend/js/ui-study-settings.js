@@ -117,8 +117,8 @@ async function startReview(blockNum, blockId) {
   try {
     const session = await StudyAPI.start(blockId);
     sessionId = session.id;
-  } catch (e) {
-    console.error('Failed to start study session:', e);
+  } catch (_e) {
+    console.error('Failed to start study session:', _e);
     // Continue anyway with local review
   }
 
@@ -148,7 +148,7 @@ function renderReviewCard() {
     if (reviewState.sessionId) {
       const duration = Math.round((Date.now() - reviewState.startTime) / 1000);
       StudyAPI.complete(reviewState.sessionId, words.length, reviewState.knownCount, duration)
-        .catch(e => console.error('Failed to complete study session:', e));
+        .catch(_e => console.error('Failed to complete study session:', _e));
     }
 
     document.getElementById('reviewBody').innerHTML = `
@@ -383,7 +383,7 @@ async function adjustBlockSize(delta) {
   // Sync to backend
   try {
     await UserAPI.updateSettings({ block_size: settingsState.blockSize });
-  } catch (e) { console.error('Failed to save block_size:', e); }
+  } catch (_e) { console.error('Failed to save block_size:', _e); }
 }
 
 async function adjustDailyGoal(delta) {
@@ -393,7 +393,7 @@ async function adjustDailyGoal(delta) {
   // Sync to backend
   try {
     await UserAPI.updateSettings({ daily_goal: settingsState.dailyGoal });
-  } catch (e) { console.error('Failed to save daily_goal:', e); }
+  } catch (_e) { console.error('Failed to save daily_goal:', _e); }
 }
 
 function toggleReminder() {
@@ -435,14 +435,14 @@ async function selectLang(lang) {
       source_lang: settingsState.sourceLang,
       target_lang: settingsState.targetLang,
     });
-  } catch (e) { console.error('Failed to save language settings:', e); }
+  } catch (_e) { console.error('Failed to save language settings:', _e); }
 }
 
 async function handleLogout() {
   if (!confirm('确定要退出登录吗？')) return;
   try {
     await AuthAPI.logout();
-  } catch { /* ignore */ }
+  } catch (_e) { /* ignore */ }
   collectedWords = {};
   blocksCache = [];
   currentUser = null;

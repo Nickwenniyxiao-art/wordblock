@@ -26,6 +26,7 @@ async function apiRequest(path, options = {}) {
   const url = API_BASE + path;
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
 
+  // 自动附加 Token
   const token = TokenManager.getAccess();
   if (token) {
     headers['Authorization'] = 'Bearer ' + token;
@@ -41,12 +42,14 @@ async function apiRequest(path, options = {}) {
 
   let resp = await fetch(url, config);
 
+  // Token 过期 → 尝试刷新
   if (resp.status === 401 && TokenManager.getRefresh()) {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       headers['Authorization'] = 'Bearer ' + TokenManager.getAccess();
       resp = await fetch(url, { ...config, headers });
     } else {
+      // 刷新失败 → 清除登录态，跳到登录页
       TokenManager.clear();
       showAuthPage();
       throw new Error('SESSION_EXPIRED');
@@ -54,7 +57,7 @@ async function apiRequest(path, options = {}) {
   }
 
   if (!resp.ok) {
-    const errBody = await resp.json().catch(() => ({}));
+    const errBody = await resp.json().catch(_e => ({}));
     const err = new Error(errBody.detail || `API Error ${resp.status}`);
     err.status = resp.status;
     err.body = errBody;
@@ -75,11 +78,12 @@ async function refreshAccessToken() {
     const data = await resp.json();
     TokenManager.save(data.access_token, data.refresh_token);
     return true;
-  } catch {
+  } catch (_e) {
     return false;
   }
 }
 
+// ===== AUTH API =====
 const AuthAPI = {
   async register(email, password, nickname) {
     const data = await apiRequest('/auth/register', {
@@ -111,20 +115,23 @@ const AuthAPI = {
           method: 'POST',
           body: { refresh_token: refresh },
         });
-      } catch { /* ignore */ }
+      } catch (_e) { /* ignore */ }
     }
     TokenManager.clear();
   }
 };
 
+// ===== DICTIONARY API =====
 const DictionaryAPI = {
   async lookup(word) {
     return apiRequest('/dictionary/lookup/' + encodeURIComponent(word));
   }
 };
 
+// ===== WORDS API =====
 const WordsAPI = {
   async collect(wordData) {
+    // wordData: { word, phonetic, audio_url, custom_note, definitions: [{part_of_speech, definition, example, is_custom}] }
     return apiRequest('/words/collect', {
       method: 'POST',
       body: wordData,
@@ -140,6 +147,7 @@ const WordsAPI = {
   },
 
   async update(wordId, data) {
+    // data: { custom_note }
     return apiRequest('/words/' + wordId, {
       method: 'PATCH',
       body: data,
@@ -151,6 +159,7 @@ const WordsAPI = {
   },
 
   async addDefinition(wordId, def) {
+    // def: { part_of_speech, definition, example, is_custom }
     return apiRequest(`/words/${wordId}/definitions`, {
       method: 'POST',
       body: def,
@@ -166,6 +175,7 @@ const WordsAPI = {
   }
 };
 
+// ===== BLOCKS API =====
 const BlocksAPI = {
   async list(sortBy = 'block_number') {
     return apiRequest('/blocks/list?sort_by=' + sortBy);
@@ -176,6 +186,7 @@ const BlocksAPI = {
   }
 };
 
+// ===== STUDY API =====
 const StudyAPI = {
   async start(blockId, studyType = 'review') {
     return apiRequest('/study/start', {
@@ -196,8 +207,10 @@ const StudyAPI = {
   }
 };
 
+// ===== USER SETTINGS API =====
 const UserAPI = {
   async updateSettings(data) {
+    // data: { nickname, source_lang, target_lang, block_size, daily_goal }
     return apiRequest('/user/settings', {
       method: 'PATCH',
       body: data,
