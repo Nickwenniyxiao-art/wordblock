@@ -57,7 +57,7 @@ async function apiRequest(path, options = {}) {
   }
 
   if (!resp.ok) {
-    const errBody = await resp.json().catch(_e => ({}));
+    const errBody = await resp.json().catch(() => ({}));
     const err = new Error(errBody.detail || `API Error ${resp.status}`);
     err.status = resp.status;
     err.body = errBody;
@@ -78,7 +78,7 @@ async function refreshAccessToken() {
     const data = await resp.json();
     TokenManager.save(data.access_token, data.refresh_token);
     return true;
-  } catch (_e) {
+  } catch (e) {
     return false;
   }
 }
@@ -104,7 +104,18 @@ const AuthAPI = {
   },
 
   async getMe() {
-    return apiRequest('/auth/me');
+    const raw = await apiRequest('/auth/me');
+    // Map snake_case to camelCase
+    return {
+      ...raw,
+      sourceLang: raw.source_lang || raw.sourceLang || 'English',
+      targetLang: raw.target_lang || raw.targetLang || '中文',
+      blockSize: raw.block_size || raw.blockSize || 30,
+      dailyGoal: raw.daily_goal || raw.dailyGoal || 20,
+      avatarUrl: raw.avatar_url || raw.avatarUrl || null,
+      authProvider: raw.auth_provider || raw.authProvider || 'email',
+      createdAt: raw.created_at || raw.createdAt || '',
+    };
   },
 
   async logout() {
@@ -115,7 +126,7 @@ const AuthAPI = {
           method: 'POST',
           body: { refresh_token: refresh },
         });
-      } catch (_e) { /* ignore */ }
+      } catch (e) { /* ignore */ }
     }
     TokenManager.clear();
   }
@@ -124,7 +135,26 @@ const AuthAPI = {
 // ===== DICTIONARY API =====
 const DictionaryAPI = {
   async lookup(word) {
-    return apiRequest('/dictionary/lookup/' + encodeURIComponent(word));
+    const raw = await apiRequest('/dictionary/lookup/' + encodeURIComponent(word));
+    // Map snake_case backend fields to camelCase for frontend
+    return {
+      word: raw.word,
+      phonetic: raw.phonetic,
+      audioUrl: raw.audio_url || raw.audioUrl || '',
+      meanings: (raw.meanings || []).map(m => ({
+        partOfSpeech: m.part_of_speech || m.partOfSpeech || '',
+        definitions: (m.definitions || []).map(d => ({
+          definition: d.definition || '',
+          example: d.example || '',
+        })),
+      })),
+      isCollected: raw.is_collected != null ? raw.is_collected : (raw.isCollected || false),
+      collectedWordId: raw.collected_word_id || raw.collectedWordId || null,
+      hitCount: raw.hit_count != null ? raw.hit_count : (raw.hitCount || 0),
+      source: raw.source || null,
+      extra: raw.extra || null,
+      error: raw.error || null,
+    };
   }
 };
 
@@ -132,14 +162,46 @@ const DictionaryAPI = {
 const WordsAPI = {
   async collect(wordData) {
     // wordData: { word, phonetic, audio_url, custom_note, definitions: [{part_of_speech, definition, example, is_custom}] }
-    return apiRequest('/words/collect', {
+    const raw = await apiRequest('/words', {
       method: 'POST',
       body: wordData,
     });
+    // Map snake_case to camelCase
+    return {
+      ...raw,
+      audioUrl: raw.audio_url || '',
+      hitCount: raw.hit_count || 0,
+      blockId: raw.block_id || null,
+      blockNumber: raw.block_number || null,
+      customNote: raw.custom_note || '',
+      addedAt: raw.added_at || '',
+      definitions: (raw.definitions || []).map(d => ({
+        ...d,
+        partOfSpeech: d.part_of_speech || '',
+        isCustom: d.is_custom || false,
+        sortOrder: d.sort_order || 0,
+      })),
+    };
   },
 
   async list(sortBy = 'added_at', sortOrder = 'desc', limit = 200, offset = 0) {
-    return apiRequest(`/words/list?sort_by=${sortBy}&sort_order=${sortOrder}&limit=${limit}&offset=${offset}`);
+    const rawList = await apiRequest(`/words/list?sort_by=${sortBy}&sort_order=${sortOrder}&limit=${limit}&offset=${offset}`);
+    // Map snake_case to camelCase
+    return rawList.map(w => ({
+      ...w,
+      audioUrl: w.audio_url || '',
+      hitCount: w.hit_count || 0,
+      blockId: w.block_id || null,
+      blockNumber: w.block_number || null,
+      customNote: w.custom_note || '',
+      addedAt: w.added_at || '',
+      definitions: (w.definitions || []).map(d => ({
+        ...d,
+        partOfSpeech: d.part_of_speech || '',
+        isCustom: d.is_custom || false,
+        sortOrder: d.sort_order || 0,
+      })),
+    }));
   },
 
   async search(word) {
@@ -178,7 +240,15 @@ const WordsAPI = {
 // ===== BLOCKS API =====
 const BlocksAPI = {
   async list(sortBy = 'block_number') {
-    return apiRequest('/blocks/list?sort_by=' + sortBy);
+    const rawList = await apiRequest('/blocks/list?sort_by=' + sortBy);
+    return rawList.map(b => ({
+      ...b,
+      blockNumber: b.block_number || b.blockNumber,
+      totalHitCount: b.total_hit_count || b.totalHitCount || 0,
+      wordCount: b.word_count || b.wordCount || 0,
+      isFull: b.is_full != null ? b.is_full : (b.isFull || false),
+      createdAt: b.created_at || b.createdAt || '',
+    }));
   },
 
   async getDetail(blockId) {
