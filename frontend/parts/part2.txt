@@ -1,0 +1,1305 @@
+
+  background: #007AFF;
+  border: none;
+  color: #FFF;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-review-done:active { opacity: 0.8; }
+
+/* ============================== */
+/* ===== SETTINGS (Tab 4) ===== */
+/* ============================== */
+.settings-header { padding: 8px 20px 0; }
+.settings-sections {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.settings-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #999;
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+.settings-card {
+  border-radius: 14px;
+  padding: 0 16px;
+  background: #F9F9F9;
+  overflow: hidden;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 10px 0;
+  gap: 12px;
+}
+.settings-row + .settings-row {
+  border-top: 1px solid #F0F0F0;
+}
+.settings-row-left { flex: 1; min-width: 0; }
+.settings-row-label { font-size: 15px; font-weight: 500; color: #333; }
+.settings-row-sublabel { font-size: 12px; color: #BBB; margin-top: 2px; }
+.settings-row-value {
+  font-size: 14px;
+  color: #999;
+  flex-shrink: 0;
+}
+.settings-row-arrow {
+  font-size: 16px;
+  color: #CCC;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.settings-row-red .settings-row-label { color: #FF3B30; }
+
+/* Avatar row */
+.settings-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: #E0E0E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #888;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.settings-login-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: #007AFF;
+  border: none;
+  color: #FFF;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.settings-login-btn:active { opacity: 0.8; }
+
+/* Language selector */
+.lang-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  padding: 8px 0;
+}
+.lang-pill {
+  display: inline-flex;
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: #FFF;
+  border: 1px solid #E0E0E0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #333;
+  -webkit-tap-highlight-color: transparent;
+}
+.lang-pill:active { background: #F5F5F5; }
+.lang-arrow { font-size: 18px; color: #CCC; }
+
+/* Stepper */
+.stepper { display: flex; align-items: center; gap: 12px; }
+.stepper-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF;
+  border: 1px solid #E0E0E0;
+  font-size: 18px;
+  cursor: pointer;
+  color: #333;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.stepper-btn:active { background: #F5F5F5; }
+.stepper-value { font-size: 18px; font-weight: 700; min-width: 32px; text-align: center; }
+
+/* Toggle */
+.toggle-track {
+  width: 50px; height: 30px;
+  border-radius: 99px;
+  background: #E0E0E0;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.25s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.toggle-track.on { background: #34C759; }
+.toggle-thumb {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: #FFF;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  position: absolute;
+  top: 3px; left: 3px;
+  transition: transform 0.25s;
+}
+.toggle-track.on .toggle-thumb { transform: translateX(20px); }
+.time-display { font-size: 14px; color: #999; margin-right: 12px; }
+
+/* Pronunciation toggle pills */
+.pron-toggle {
+  display: flex;
+  border-radius: 8px;
+  background: #EBEBEB;
+  padding: 2px;
+  gap: 2px;
+}
+.pron-pill {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.pron-pill.active {
+  background: #FFF;
+  color: #333;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* About */
+.about-section { text-align: center; padding: 14px 0; }
+.about-app-name { font-size: 20px; font-weight: 700; }
+.about-version { font-size: 12px; color: #BBB; margin-top: 4px; }
+.about-tagline { font-size: 13px; color: #CCC; margin-top: 6px; }
+
+/* Language sheet options */
+.lang-options-list { display: flex; flex-direction: column; gap: 2px; }
+.lang-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  color: #333;
+}
+.lang-option:active { background: #F5F5F5; }
+.lang-option.selected { background: #E8F4FD; color: #007AFF; }
+.lang-option-check { font-size: 18px; color: #007AFF; }
+
+
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="status-bar"></div>
+
+  <!-- ====== PAGE 1: SEARCH ====== -->
+  <div id="page-search" class="page active">
+    <div class="header">
+      <div class="page-title">查词</div>
+      <div class="page-subtitle">搜索单词，收录到你的词库</div>
+    </div>
+
+    <div class="search-container">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="输入英文单词..."
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="search"
+        >
+      </div>
+    </div>
+
+    <!-- Homepage modules: WOD + Progress + Quick Review -->
+    <div class="home-modules" id="homeModules"></div>
+
+    <!-- Recent words -->
+    <div class="recent-section" id="recentSection"></div>
+
+    <!-- Explore words -->
+    <div class="explore-section" id="exploreSection"></div>
+
+    <!-- Tips -->
+    <div class="tips-section" id="tipsSection"></div>
+
+    <!-- Results area -->
+    <div class="results-area" id="resultsArea"></div>
+
+    <!-- Hidden file input for photo in result card -->
+    <input type="file" id="resultImageInput" accept="image/*" capture="environment" hidden>
+  </div>
+
+  <!-- ====== PAGE 2: WORDBOOK ====== -->
+  <div id="page-wordbook" class="page">
+    <div class="wb-header">
+      <div class="wb-header-left">
+        <div class="page-title">生词本</div>
+        <div class="page-subtitle">我收录的所有单词</div>
+      </div>
+      <div class="wb-count-badge" id="wbCountBadge">0 个单词</div>
+    </div>
+    <div class="wb-toolbar">
+      <div class="wb-filter-container">
+        <div class="wb-filter-bar">
+          <span class="wb-filter-icon">🔍</span>
+          <input
+            type="text"
+            id="wbFilterInput"
+            placeholder="搜索单词..."
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          >
+        </div>
+      </div>
+      <button class="wb-sort-btn" id="wbSortBtn" onclick="cycleWbSort()">⇅ 查询次数</button>
+    </div>
+    <div class="wb-word-list" id="wbWordList"></div>
+  </div>
+
+  <!-- ====== PAGE 3: STUDY ====== -->
+  <div id="page-study" class="page">
+    <div class="study-header">
+      <div class="page-title">学习</div>
+      <div class="page-subtitle">基于词块的智能复习</div>
+    </div>
+    <div class="stats-row" id="studyStats"></div>
+    <div class="block-list" id="blockList"></div>
+  </div>
+
+  <!-- ====== PAGE 4: SETTINGS ====== -->
+  <div id="page-settings" class="page">
+    <div class="settings-header">
+      <div class="page-title">设置</div>
+      <div class="page-subtitle">个性化你的学习体验</div>
+    </div>
+    <div class="settings-sections" id="settingsSections"></div>
+  </div>
+</div>
+
+<!-- Tab bar — WeChat style -->
+<nav class="tab-bar" aria-label="主导航">
+  <div class="tab-item active" data-tab="search" role="tab" aria-selected="true">
+    <span class="tab-icon">🔍</span>
+    <span class="tab-label">查词</span>
+  </div>
+  <div class="tab-item" data-tab="wordbook" role="tab" aria-selected="false">
+    <span class="tab-icon">📒</span>
+    <span class="tab-label">生词本</span>
+  </div>
+  <div class="tab-item" data-tab="study" role="tab" aria-selected="false">
+    <span class="tab-icon">📖</span>
+    <span class="tab-label">学习</span>
+  </div>
+  <div class="tab-item" data-tab="settings" role="tab" aria-selected="false">
+    <span class="tab-icon">⚙️</span>
+    <span class="tab-label">设置</span>
+  </div>
+</nav>
+
+<!-- Sheet overlay -->
+<div class="sheet-overlay" id="sheetOverlay"></div>
+
+<!-- Collection sheet -->
+<div class="sheet" id="collectionSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">收录到词块</div>
+  <div class="sheet-word" id="sheetWord"></div>
+  <div class="sheet-selected-defs" id="sheetSelectedDefs"></div>
+  <div class="sheet-label">自定义笔记</div>
+  <textarea class="sheet-textarea" id="sheetNote" rows="3" placeholder="添加你自己的释义或笔记..."></textarea>
+  <div class="sheet-label">场景图片</div>
+  <div class="image-upload-area" id="imageUpload">
+    <span class="upload-icon">📷</span>
+    <span>点击上传图片</span>
+  </div>
+  <input type="file" id="imageFileInput" accept="image/*" hidden>
+  <button class="btn-confirm" id="btnConfirm">确认收录</button>
+</div>
+
+<!-- Word detail full page -->
+<div class="word-detail-page" id="wordDetailPage">
+  <div class="wd-nav">
+    <button class="wd-back-btn" onclick="closeWordDetail()">❮ 返回</button>
+    <div class="wd-nav-title">单词详情</div>
+  </div>
+  <div class="wd-body" id="wordDetailBody"></div>
+</div>
+<input type="file" id="wdPhotoInput" accept="image/*" capture="environment" hidden>
+
+<!-- Lightbox -->
+<div class="wd-lightbox" id="wdLightbox">
+  <button class="wd-lightbox-close" onclick="closeLightbox()">✕</button>
+  <img class="wd-lightbox-img" id="lbImg" src="" alt="">
+  <div class="wd-lightbox-nav">
+    <button class="wd-lightbox-arrow" id="lbPrev" onclick="lightboxNav(-1)">‹</button>
+    <span class="wd-lightbox-counter" id="lbCounter">1 / 1</span>
+    <button class="wd-lightbox-arrow" id="lbNext" onclick="lightboxNav(1)">›</button>
+  </div>
+</div>
+
+<!-- Definition Sheet -->
+<div class="def-sheet-overlay" id="defSheetOverlay" onclick="closeDefSheet()"></div>
+<div class="def-sheet" id="defSheet">
+  <div class="def-sheet-handle"></div>
+  <div class="def-sheet-header">
+    <div class="def-sheet-title" id="dsTitle">添加释义</div>
+    <div class="def-sheet-phonetic" id="dsPhonetic"></div>
+  </div>
+  <div class="def-sheet-section">词典释义</div>
+  <div class="def-sheet-list" id="dsDictList"></div>
+  <div class="def-sheet-divider"></div>
+  <div class="def-sheet-section">自定义释义 <span class="def-sheet-section-sub">（用户自己添加）</span></div>
+  <div class="def-sheet-custom-row">
+    <input class="pos-input" id="dsCustomPos" placeholder="n." value="n.">
+    <input id="dsCustomDef" placeholder="输入自定义释义...">
+    <button class="ds-add-btn" onclick="addSheetCustomDef()">添加</button>
+  </div>
+  <div id="dsMyCustomList"></div>
+  <button class="def-sheet-confirm" onclick="confirmDefSheet()">确认</button>
+</div>
+
+<!-- Block browse page -->
+<div class="block-browse-page" id="blockBrowsePage">
+  <div class="bb-nav">
+    <button class="bb-back-btn" onclick="closeBlockBrowse()">❮ 返回</button>
+    <div class="bb-nav-title" id="bbNavTitle">Block #1</div>
+  </div>
+  <div class="bb-list" id="bbWordList"></div>
+</div>
+
+<!-- Language selector sheet -->
+<div class="sheet" id="langSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title" id="langSheetTitle">选择语言</div>
+  <div class="lang-options-list" id="langOptionsList"></div>
+</div>
+
+<!-- Review overlay -->
+<div class="review-overlay" id="reviewOverlay">
+  <div class="review-top-bar">
+    <button class="btn-review-close" id="btnReviewClose">✕</button>
+    <div class="review-progress-text" id="reviewProgressText">1/5</div>
+    <div style="width:44px"></div>
+  </div>
+  <div class="review-progress-bar-track">
+    <div class="review-progress-bar-fill" id="reviewProgressFill" style="width:20%"></div>
+  </div>
+  <div class="review-body" id="reviewBody"></div>
+  <div class="review-actions" id="reviewActions">
+    <button class="btn-dont-know" id="btnDontKnow">不认识</button>
+    <button class="btn-know" id="btnKnow">认识</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== MOCK DICTIONARY =====
+const mockDictionary = {
+  'hello': {
+    word: 'hello',
+    phonetic: '/həˈloʊ/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/hello-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'interj.',
+        definitions: [
+          { definition: '用于问候或打招呼', example: 'Hello! How are you?' },
+          { definition: '用于引起注意或表示惊讶', example: 'Hello? Is anyone there?' }
+        ]
+      },
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '一声问候', example: 'She gave a warm hello to everyone.' }
+        ]
+      }
+    ]
+  },
+  'world': {
+    word: 'world',
+    phonetic: '/wɜːrld/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/world-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '世界，地球', example: 'She traveled around the world.' },
+          { definition: '世间所有人类；人类社会', example: 'The whole world watched the game.' },
+          { definition: '某一领域或范围', example: 'The world of science is constantly evolving.' }
+        ]
+      }
+    ]
+  },
+  'apple': {
+    word: 'apple',
+    phonetic: '/ˈæpəl/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/apple-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '苹果（一种水果）', example: 'She ate an apple for breakfast.' },
+          { definition: '苹果树', example: 'The apple tree blooms in spring.' }
+        ]
+      }
+    ]
+  },
+  'beautiful': {
+    word: 'beautiful',
+    phonetic: '/ˈbjuːtɪfəl/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/beautiful-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'adj.',
+        definitions: [
+          { definition: '美丽的，漂亮的', example: 'She wore a beautiful dress.' },
+          { definition: '令人愉悦的；极好的', example: 'What a beautiful day it is!' }
+        ]
+      }
+    ]
+  },
+  'language': {
+    word: 'language',
+    phonetic: '/ˈlæŋɡwɪdʒ/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/language-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '语言（人类交流的系统）', example: 'She speaks three languages fluently.' },
+          { definition: '语言风格；措辞', example: 'The report uses formal language.' },
+          { definition: '编程语言', example: 'Python is a popular programming language.' }
+        ]
+      }
+    ]
+  },
+  'book': {
+    word: 'book',
+    phonetic: '/bʊk/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/book-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '书，书籍', example: 'I read a great book last week.' },
+          { definition: '账本；账册', example: 'She kept the company books.' }
+        ]
+      },
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '预订，预约', example: 'I booked a table at the restaurant.' }
+        ]
+      }
+    ]
+  },
+  'computer': {
+    word: 'computer',
+    phonetic: '/kəmˈpjuːtər/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/computer-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '电脑，计算机', example: 'She works on her computer all day.' },
+          { definition: '电子计算设备', example: 'The computer processes data quickly.' }
+        ]
+      }
+    ]
+  },
+  'love': {
+    word: 'love',
+    phonetic: '/lʌv/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/love-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '爱，爱情，爱意', example: 'Their love for each other grew stronger.' },
+          { definition: '喜爱，热爱', example: 'Her love of music began in childhood.' }
+        ]
+      },
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '爱，热爱', example: 'I love spending time with my family.' },
+          { definition: '非常喜欢', example: 'She loves chocolate ice cream.' }
+        ]
+      }
+    ]
+  },
+  'happy': {
+    word: 'happy',
+    phonetic: '/ˈhæpi/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/happy-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'adj.',
+        definitions: [
+          { definition: '快乐的，幸福的，高兴的', example: 'She was happy to see her old friends.' },
+          { definition: '乐意的，愿意的', example: 'I\'m happy to help you.' }
+        ]
+      }
+    ]
+  },
+  'sad': {
+    word: 'sad',
+    phonetic: '/sæd/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/sad-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'adj.',
+        definitions: [
+          { definition: '悲伤的，难过的', example: 'He felt sad after hearing the news.' },
+          { definition: '令人遗憾的；可悲的', example: 'It\'s a sad situation.' }
+        ]
+      }
+    ]
+  },
+  'time': {
+    word: 'time',
+    phonetic: '/taɪm/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/time-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '时间', example: 'Time passes quickly when you\'re busy.' },
+          { definition: '时刻，时候', example: 'What time is it?' },
+          { definition: '次数，回', example: 'I\'ve been there three times.' }
+        ]
+      },
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '为…计时；安排时间', example: 'She timed the race carefully.' }
+        ]
+      }
+    ]
+  },
+  'water': {
+    word: 'water',
+    phonetic: '/ˈwɔːtər/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/water-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '水', example: 'Please drink more water every day.' },
+          { definition: '水域，水体', example: 'The waters of the Pacific Ocean.' }
+        ]
+      },
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '给…浇水，灌溉', example: 'Don\'t forget to water the plants.' }
+        ]
+      }
+    ]
+  },
+  'food': {
+    word: 'food',
+    phonetic: '/fuːd/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/food-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '食物，食品', example: 'Italian food is my favorite.' },
+          { definition: '养料；精神食粮', example: 'Books are food for the mind.' }
+        ]
+      }
+    ]
+  },
+  'music': {
+    word: 'music',
+    phonetic: '/ˈmjuːzɪk/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/music-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '音乐', example: 'She listens to music every morning.' },
+          { definition: '乐谱，乐曲', example: 'Can you read music?' }
+        ]
+      }
+    ]
+  },
+  'friend': {
+    word: 'friend',
+    phonetic: '/frɛnd/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/friend-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '朋友，好友', example: 'He\'s been my best friend since childhood.' },
+          { definition: '盟友；支持者', example: 'She\'s a friend of the arts.' }
+        ]
+      }
+    ]
+  },
+  'family': {
+    word: 'family',
+    phonetic: '/ˈfæməli/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/family-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '家庭，家人', example: 'My family means everything to me.' },
+          { definition: '家族；血缘', example: 'The family has lived here for generations.' }
+        ]
+      },
+      {
+        partOfSpeech: 'adj.',
+        definitions: [
+          { definition: '适合家庭的；家庭的', example: 'This is a great family restaurant.' }
+        ]
+      }
+    ]
+  },
+  'school': {
+    word: 'school',
+    phonetic: '/skuːl/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/school-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '学校', example: 'The children walk to school together.' },
+          { definition: '上课时间，学习阶段', example: 'School starts at 8 AM.' }
+        ]
+      },
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '教导，训练', example: 'She was schooled in classical music.' }
+        ]
+      }
+    ]
+  },
+  'work': {
+    word: 'work',
+    phonetic: '/wɜːrk/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/work-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '工作，劳动', example: 'She has a lot of work to do today.' },
+          { definition: '作品，著作', example: 'This painting is his greatest work.' }
+        ]
+      },
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '工作，劳动', example: 'He works at a tech company.' },
+          { definition: '运转，起作用', example: 'Does this machine work properly?' }
+        ]
+      }
+    ]
+  },
+  'travel': {
+    word: 'travel',
+    phonetic: '/ˈtrævəl/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/travel-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '旅行，旅游', example: 'She loves to travel to new places.' },
+          { definition: '传播；传送', example: 'News travels fast.' }
+        ]
+      },
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '旅行，游历', example: 'Travel broadens the mind.' }
+        ]
+      }
+    ]
+  },
+  'dream': {
+    word: 'dream',
+    phonetic: '/driːm/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/dream-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '梦，梦境', example: 'I had a strange dream last night.' },
+          { definition: '梦想，理想', example: 'Her dream is to become a doctor.' }
+        ]
+      },
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '做梦', example: 'I dreamed about flying through the sky.' },
+          { definition: '梦想，幻想', example: 'He dreams of starting his own business.' }
+        ]
+      }
+    ]
+  },
+  'hope': {
+    word: 'hope',
+    phonetic: '/hoʊp/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/hope-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '希望，期望', example: 'There is still hope for a peaceful solution.' },
+          { definition: '有希望的人/事物', example: 'She is the hope of the team.' }
+        ]
+      },
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '希望，期待', example: 'I hope to see you soon.' }
+        ]
+      }
+    ]
+  },
+  'think': {
+    word: 'think',
+    phonetic: '/θɪŋk/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/think-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '思考，想', example: 'Think before you speak.' },
+          { definition: '认为，以为', example: 'I think it\'s a great idea.' },
+          { definition: '考虑，打算', example: 'Are you thinking of moving abroad?' }
+        ]
+      }
+    ]
+  },
+  'learn': {
+    word: 'learn',
+    phonetic: '/lɜːrn/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/learn-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '学习，学会', example: 'She is learning to play the guitar.' },
+          { definition: '了解到，得知', example: 'I learned about the accident from the news.' }
+        ]
+      }
+    ]
+  },
+  'teach': {
+    word: 'teach',
+    phonetic: '/tiːtʃ/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/teach-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '教，教授', example: 'She teaches English at a high school.' },
+          { definition: '使懂得；教训', example: 'Experience teaches us many lessons.' }
+        ]
+      }
+    ]
+  },
+  'read': {
+    word: 'read',
+    phonetic: '/riːd/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/read-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '读，阅读', example: 'She reads a book every week.' },
+          { definition: '理解，解读', example: 'How do you read this situation?' }
+        ]
+      }
+    ]
+  },
+  'write': {
+    word: 'write',
+    phonetic: '/raɪt/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/write-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '写，书写', example: 'Please write your name at the top.' },
+          { definition: '写作，创作', example: 'She writes novels in her spare time.' }
+        ]
+      }
+    ]
+  },
+  'run': {
+    word: 'run',
+    phonetic: '/rʌn/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/run-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '跑，奔跑', example: 'He runs five kilometers every morning.' },
+          { definition: '经营，管理', example: 'She runs her own bakery.' },
+          { definition: '运行，运转', example: 'The program runs smoothly.' }
+        ]
+      },
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '跑，奔跑；短途行程', example: 'Let\'s go for a run in the park.' }
+        ]
+      }
+    ]
+  },
+  'eat': {
+    word: 'eat',
+    phonetic: '/iːt/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/eat-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '吃，进食', example: 'We eat dinner together as a family.' },
+          { definition: '侵蚀，消耗', example: 'Acid eats away at the metal.' }
+        ]
+      }
+    ]
+  },
+  'sleep': {
+    word: 'sleep',
+    phonetic: '/sliːp/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/sleep-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '睡觉，睡眠', example: 'She sleeps eight hours every night.' }
+        ]
+      },
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '睡眠，睡觉', example: 'He needs more sleep to recover.' }
+        ]
+      }
+    ]
+  },
+  'play': {
+    word: 'play',
+    phonetic: '/pleɪ/',
+    audioUrl: 'https://api.dictionaryapi.dev/media/pronunciations/en/play-us.mp3',
+    meanings: [
+      {
+        partOfSpeech: 'v.',
+        definitions: [
+          { definition: '玩耍，游戏', example: 'The children play in the park.' },
+          { definition: '演奏（乐器）', example: 'She plays the violin beautifully.' },
+          { definition: '参加（体育运动）；比赛', example: 'Do you play basketball?' }
+        ]
+      },
+      {
+        partOfSpeech: 'n.',
+        definitions: [
+          { definition: '游戏，玩耍', example: 'Learning through play is very effective.' },
+          { definition: '戏剧，话剧', example: 'We watched a play at the theater.' }
+        ]
+      }
+    ]
+  }
+};
+
+// Parts of speech translation map for API fallback
+const posTranslation = {
+  'noun': '名词', 'verb': '动词', 'adjective': '形容词', 'adverb': '副词',
+  'pronoun': '代词', 'preposition': '介词', 'conjunction': '连词',
+  'interjection': '感叹词', 'article': '冠词', 'determiner': '限定词',
+  'exclamation': '感叹词', 'abbreviation': '缩略词'
+};
+
+// ===== MOCK DATA =====
+const mockCollected = {
+  'hello': { blockNumber: 1, hitCount: 5, customNote: '打招呼最常用的词', addedAt: Date.now() - 86400000*4, selectedDefinitions: [{pos: 'interj.', def: '用于问候或打招呼'}], photos: [] },
+  'world': { blockNumber: 1, hitCount: 3, customNote: '', addedAt: Date.now() - 86400000*3, selectedDefinitions: [{pos: 'n.', def: '世界，地球'}], photos: [] },
+  'apple': { blockNumber: 1, hitCount: 2, customNote: '不只是水果，还是那个公司', addedAt: Date.now() - 86400000*2, selectedDefinitions: [{pos: 'n.', def: '苹果（一种水果）'}], photos: [] },
+  'beautiful': { blockNumber: 2, hitCount: 1, customNote: '', addedAt: Date.now() - 86400000, selectedDefinitions: [{pos: 'adj.', def: '美丽的，漂亮的'}], photos: [] },
+  'language': { blockNumber: 2, hitCount: 4, customNote: '语言，我正在学的东西', addedAt: Date.now() - 3600000, selectedDefinitions: [{pos: 'n.', def: '语言（人类交流的系统）'}], photos: [] },
+};
+
+let currentWord = '';
+let currentAudioUrl = '';
+let currentSelectedDefs = []; // tracks checked definition texts
+
+// ===== SETTINGS STATE =====
+let settingsState = {
+  sourceLang: 'English',
+  targetLang: '中文',
+  blockSize: 30,
+  dailyGoal: 20,
+  reminderEnabled: false,
+  reminderTime: '09:00',
+  darkMode: false,
+  fontSize: '标准',
+  pronunciation: '美式',
+};
+
+const languageOptions = ['English', '中文', '日本語', '한국어', 'Español', 'Français', 'Deutsch'];
+
+// ===== REVIEW STATE =====
+let reviewState = {
+  blockNum: null,
+  words: [],
+  currentIndex: 0,
+  revealed: false,
+  knownCount: 0,
+};
+
+// ===== ELEMENTS =====
+const searchInput = document.getElementById('searchInput');
+const resultsArea = document.getElementById('resultsArea');
+const recentSection = document.getElementById('recentSection');
+const homeModules = document.getElementById('homeModules');
+const exploreSection = document.getElementById('exploreSection');
+const tipsSection = document.getElementById('tipsSection');
+const resultImageInput = document.getElementById('resultImageInput');
+let resultImageData = null;
+const sheetOverlay = document.getElementById('sheetOverlay');
+const collectionSheet = document.getElementById('collectionSheet');
+const sheetWord = document.getElementById('sheetWord');
+const sheetNote = document.getElementById('sheetNote');
+const sheetSelectedDefs = document.getElementById('sheetSelectedDefs');
+const imageUpload = document.getElementById('imageUpload');
+const imageFileInput = document.getElementById('imageFileInput');
+const btnConfirm = document.getElementById('btnConfirm');
+const toast = document.getElementById('toast');
+const wordDetailPage = document.getElementById('wordDetailPage');
+const langSheet = document.getElementById('langSheet');
+const reviewOverlay = document.getElementById('reviewOverlay');
+
+let activeSheet = null;
+
+// ===== TAB SWITCHING =====
+const pages = document.querySelectorAll('.page');
+const tabs = document.querySelectorAll('.tab-item');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    pages.forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + target).classList.add('active');
+    tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    if (target === 'search') renderHomepage();
+    if (target === 'wordbook') renderWordbook();
+    if (target === 'study') renderStudy();
+    if (target === 'settings') renderSettings();
+    window.scrollTo(0, 0);
+  });
+});
+
+// ===== WORD OF THE DAY =====
+function getWordOfDay() {
+  const words = Object.keys(mockDictionary);
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const idx = seed % words.length;
+  return words[idx];
+}
+
+// ===== HOMEPAGE RENDER =====
+function renderHomepage() {
+  renderHomeModules();
+  renderRecentWords();
+  renderExploreWords();
+  renderTips();
+}
+
+function renderExploreWords() {
+  // Pick 4 random words from dictionary that are NOT collected
+  const allWords = Object.keys(mockDictionary);
+  const uncollected = allWords.filter(w => !mockCollected[w]);
+  const shuffled = uncollected.sort(() => 0.5 - Math.random()).slice(0, 4);
+
+  if (shuffled.length === 0) {
+    exploreSection.innerHTML = '';
+    return;
+  }
+
+  let cards = '';
+  shuffled.forEach(word => {
+    const d = mockDictionary[word];
+    const def = d.meanings[0].definitions[0].definition;
+    cards += `
+      <div class="explore-card" onclick="quickSearch('${escAttr(word)}')">
+        <div class="explore-card-word">${escHtml(word)}</div>
+        <div class="explore-card-phonetic">${escHtml(d.phonetic)}</div>
+        <div class="explore-card-def">${escHtml(def)}</div>
+      </div>
+    `;
+  });
+
+  exploreSection.innerHTML = `
+    <div class="explore-title">发现新单词</div>
+    <div class="explore-grid">${cards}</div>
+  `;
+}
+
+function renderTips() {
+  const tips = [
+    '在生活中遇到不认识的单词时，随手查词并收录，积少成多效果最好。',
+    '每个词块装满后会自动创建新词块，定期复习热度最高的词块效率最高。',
+    '给单词拍照记录使用场景，视觉记忆能帮助你更牢固地记住单词。',
+    '勾选你需要的释义，不用把所有意思都背，聚焦最常用的含义。',
+  ];
+  const tipIdx = new Date().getDate() % tips.length;
+
+  tipsSection.innerHTML = `
+    <div class="tip-card">
+      <div class="tip-header">💡 学习小贴士</div>
+      <div class="tip-text">${tips[tipIdx]}</div>
+    </div>
+  `;
+}
+
+function renderHomeModules() {
+  const totalCollected = Object.keys(mockCollected).length;
+  const pendingReview = totalCollected;
+  const todayAdded = 2; // mock
+
+  const wodWord = getWordOfDay();
+  const wodData = mockDictionary[wodWord];
+  const wodDef = wodData.meanings[0].definitions[0];
+  const isWodCollected = !!mockCollected[wodWord];
+
+  homeModules.innerHTML = `
+    <!-- Word of the Day -->
+    <div class="wod-card">
+      <div class="wod-header">
+        <span class="wod-tag">📅 每日一词</span>
+        ${isWodCollected
+          ? `<button class="wod-collect-btn collected-state" disabled>已收录</button>`
+          : `<button class="wod-collect-btn" onclick="collectWod('${escAttr(wodWord)}')">收录</button>`
+        }
+      </div>
+      <div class="wod-word">${escHtml(wodData.word)}</div>
+      <div class="wod-phonetic">${escHtml(wodData.phonetic)}</div>
+      <div class="wod-definition">${escHtml(wodDef.definition)}</div>
+      ${wodDef.example ? `<div class="wod-example">"${escHtml(wodDef.example)}"</div>` : ''}
+    </div>
+
+    <!-- Study Progress -->
+    <div class="progress-stats-row">
+      <div class="progress-stat">
+        <div class="progress-stat-value">${totalCollected}</div>
+        <div class="progress-stat-label">总收词</div>
+      </div>
+      <div class="progress-stat">
+        <div class="progress-stat-value">${todayAdded}</div>
+        <div class="progress-stat-label">今日新增</div>
+      </div>
+      <div class="progress-stat">
+        <div class="progress-stat-value">${pendingReview}</div>
+        <div class="progress-stat-label">待复习</div>
+      </div>
+    </div>
+
+    <!-- Quick Review -->
+    <button class="quick-review-btn" onclick="switchToStudy()">
+      <div class="quick-review-icon">⚡</div>
+      <div class="quick-review-text">
+        <div class="quick-review-title">开始今日复习</div>
+        <div class="quick-review-sub">共 ${totalCollected} 个词待复习</div>
+      </div>
+      <div class="quick-review-arrow">›</div>
+    </button>
+  `;
+}
+
+function collectWod(word) {
+  currentWord = word;
+  currentSelectedDefs = [];
+  const data = mockDictionary[word];
+  if (data && data.meanings[0] && data.meanings[0].definitions[0]) {
+    currentSelectedDefs = [data.meanings[0].definitions[0].definition];
+  }
+  openSheet(word);
+}
+
+function switchToStudy() {
+  pages.forEach(p => p.classList.remove('active'));
+  document.getElementById('page-study').classList.add('active');
+  tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+  const studyTab = document.querySelector('[data-tab="study"]');
+  if (studyTab) { studyTab.classList.add('active'); studyTab.setAttribute('aria-selected', 'true'); }
+  renderStudy();
+  window.scrollTo(0, 0);
+}
+
+// ===== RECENT WORDS =====
+function renderRecentWords() {
+  const entries = Object.entries(mockCollected);
+  if (entries.length === 0) {
+    recentSection.innerHTML = '';
+    return;
+  }
+
+  entries.sort((a, b) => (b[1].addedAt || 0) - (a[1].addedAt || 0));
+  const recent = entries.slice(0, 8);
+
+  let chips = '';
+  recent.forEach(([word, info]) => {
+    chips += `<div class="recent-chip" onclick="quickSearch('${escAttr(word)}')">${escHtml(word)} <span class="chip-block">#${info.blockNumber}</span></div>`;
+  });
+
+  recentSection.innerHTML = `
+    <div class="recent-title">最近收录</div>
+    <div class="recent-list">${chips}</div>
+  `;
+}
+
+function quickSearch(word) {
+  searchInput.value = word;
+  searchWord(word);
+}
+
+// Initial render
+renderHomepage();
+
+// ===== SEARCH =====
+searchInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const word = searchInput.value.trim().toLowerCase();
+    if (word) searchWord(word);
+  }
+});
+
+// Hide home modules and recent when searching
+searchInput.addEventListener('input', () => {
+  if (!searchInput.value.trim()) {
+    // Restore homepage if input cleared
+    renderHomepage();
+    resultsArea.innerHTML = '';
+    resultImageData = null;
+  }
+});
+
+async function searchWord(word) {
+  currentWord = word;
+  currentSelectedDefs = [];
+
+  if (mockCollected[word]) {
+    mockCollected[word].hitCount++;
+  }
+
+  // Hide home modules + recent + explore + tips while showing results
+  homeModules.innerHTML = '';
+  recentSection.innerHTML = '';
+  exploreSection.innerHTML = '';
+  tipsSection.innerHTML = '';
+  resultImageData = null;
+  showSkeleton();
+
+  // Check local dictionary first
+  if (mockDictionary[word]) {
+    setTimeout(() => showResults(word, mockDictionary[word], 'local'), 200);
+    return;
+  }
+
+  // Fallback to API
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    if (!res.ok) throw new Error('Not found');
+    const data = await res.json();
+    showResults(word, data[0], 'api');
+  } catch (err) {
+    showError();
+  }
+}
+
+function showSkeleton() {
+  resultsArea.innerHTML = `
+    <div class="skeleton-card">
+      <div class="skeleton-line w-40"></div>
+      <div class="skeleton-line w-25"></div>
+      <div style="height:8px"></div>
+      <div class="skeleton-line w-15"></div>
+      <div class="skeleton-line w-100"></div>
+      <div class="skeleton-line w-90"></div>
+      <div class="skeleton-line w-75"></div>
+    </div>
+  `;
+}
+
+function showResults(word, data, source) {
+  const isCollected = !!mockCollected[word];
+  const collectedInfo = mockCollected[word];
+
+  // Audio URL
+  let audioUrl = '';
+  if (source === 'local') {
+    audioUrl = data.audioUrl || '';
+  } else if (data.phonetics) {
+    for (const p of data.phonetics) { if (p.audio) { audioUrl = p.audio; break; } }
+  }
+  currentAudioUrl = audioUrl;
+
+  // Phonetic text
+  let phoneticText = '';
+  if (source === 'local') {
+    phoneticText = data.phonetic || '';
+  } else {
+    phoneticText = data.phonetic || '';
+    if (!phoneticText && data.phonetics) {
+      for (const p of data.phonetics) { if (p.text) { phoneticText = p.text; break; } }
+    }
+  }
+
+  // Build meanings with checkboxes
+  let meaningsHtml = '';
+  const meanings = data.meanings || [];
+  meanings.forEach((meaning, mi) => {
+    if (mi > 0) meaningsHtml += '<div class="meaning-divider"></div>';
+    let posLabel = '';
+    if (source === 'local') {
+      posLabel = meaning.partOfSpeech;
+    } else {
+      posLabel = posTranslation[meaning.partOfSpeech.toLowerCase()] || meaning.partOfSpeech;
+    }
+    meaningsHtml += `<div class="meaning-group">`;
+    meaningsHtml += `<div class="pos-badge">${escHtml(posLabel)}</div>`;
+
+    const defs = meaning.definitions.slice(0, 3);
+    defs.forEach((def, di) => {
+      const defKey = `${mi}-${di}`;
+      meaningsHtml += `
+ 
