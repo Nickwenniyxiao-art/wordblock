@@ -4,16 +4,134 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>WordBlock</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#007AFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="WordBlock">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Styles -->
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/wordbook.css">
 <link rel="stylesheet" href="css/study-settings.css">
+<style>
+/* ===== AUTH PAGE ===== */
+.auth-page {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #FFFFFF;
+  z-index: 10000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.auth-page.open {
+  display: flex;
+}
+.auth-content {
+  width: 100%;
+  max-width: 360px;
+}
+.auth-logo {
+  font-size: 56px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.auth-app-name {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  color: #1A1A1A;
+  margin-bottom: 4px;
+}
+.auth-subtitle {
+  font-size: 15px;
+  color: #888;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.auth-field {
+  margin-bottom: 16px;
+}
+.auth-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+}
+.auth-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #FAFAFA;
+  color: #1A1A1A;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.auth-input:focus {
+  border-color: #007AFF;
+  background: #FFF;
+}
+.auth-error {
+  color: #FF3B30;
+  font-size: 13px;
+  min-height: 20px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.auth-btn {
+  width: 100%;
+  padding: 14px;
+  background: #007AFF;
+  color: #FFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.auth-btn:active:not(:disabled) {
+  opacity: 0.8;
+}
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #888;
+}
+.auth-switch a {
+  color: #007AFF;
+  text-decoration: none;
+  font-weight: 500;
+}
+</style>
 </head>
 <body>
 
-<div class="app">
+<!-- Auth Page -->
+<div class="auth-page" id="authPage">
+  <div class="auth-content" id="authContent"></div>
+</div>
+
+<div class="app" id="appMain">
   <div class="status-bar"></div>
 
   <!-- ====== PAGE 1: SEARCH ====== -->
@@ -39,7 +157,7 @@
       </div>
     </div>
 
-    <!-- Homepage modules: WOD + Progress + Quick Review -->
+    <!-- Homepage modules: Progress + Quick Review -->
     <div class="home-modules" id="homeModules"></div>
 
     <!-- Recent words -->
@@ -176,7 +294,7 @@
     <div class="def-sheet-title" id="dsTitle">添加释义</div>
     <div class="def-sheet-phonetic" id="dsPhonetic"></div>
   </div>
-  <div class="def-sheet-section">词典释义</div>
+  <div class="def-sheet-section">已收录的释义</div>
   <div class="def-sheet-list" id="dsDictList"></div>
   <div class="def-sheet-divider"></div>
   <div class="def-sheet-section">自定义释义 <span class="def-sheet-section-sub">（用户自己添加）</span></div>
@@ -225,10 +343,24 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<script src="js/api.js"></script>
 <script src="js/data.js"></script>
 <script src="js/ui-search.js"></script>
 <script src="js/ui-wordbook.js"></script>
 <script src="js/ui-study-settings.js"></script>
+<script>
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW registration failed:', err));
+  });
+}
+
+// Initialize App
+initApp();
+</script>
 
 </body>
 </html>
