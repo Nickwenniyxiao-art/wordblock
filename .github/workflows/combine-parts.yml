@@ -22,7 +22,7 @@ jobs:
 
       - name: Decode part3 from split base64
         run: |
-          cat frontend/parts/part3_b64_1.txt frontend/parts/part3_b64_2.txt | base64 -d > /tmp/part3_decoded.txt
+          cat frontend/parts/part3_b64_1.txt frontend/parts/part3_b64_2.txt | tr -d '\n' | base64 -d > /tmp/part3_decoded.txt
           echo "Part3 decoded lines: $(wc -l < /tmp/part3_decoded.txt)"
           echo "Part3 decoded size: $(wc -c < /tmp/part3_decoded.txt) bytes"
 
