@@ -42,15 +42,6 @@ tabs.forEach(tab => {
   });
 });
 
-// ===== WORD OF THE DAY =====
-function getWordOfDay() {
-  const words = Object.keys(mockDictionary);
-  const today = new Date();
-  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-  const idx = seed % words.length;
-  return words[idx];
-}
-
 // ===== HOMEPAGE RENDER =====
 function renderHomepage() {
   renderHomeModules();
@@ -60,32 +51,12 @@ function renderHomepage() {
 }
 
 function renderExploreWords() {
-  // Pick 4 random words from dictionary that are NOT collected
-  const allWords = Object.keys(mockDictionary);
-  const uncollected = allWords.filter(w => !mockCollected[w]);
-  const shuffled = uncollected.sort(() => 0.5 - Math.random()).slice(0, 4);
-
-  if (shuffled.length === 0) {
-    exploreSection.innerHTML = '';
-    return;
-  }
-
-  let cards = '';
-  shuffled.forEach(word => {
-    const d = mockDictionary[word];
-    const def = d.meanings[0].definitions[0].definition;
-    cards += `
-      <div class="explore-card" onclick="quickSearch('${escAttr(word)}')">
-        <div class="explore-card-word">${escHtml(word)}</div>
-        <div class="explore-card-phonetic">${escHtml(d.phonetic)}</div>
-        <div class="explore-card-def">${escHtml(def)}</div>
-      </div>
-    `;
-  });
-
+  // 探索单词 — 暂时使用提示引导用户自行查词
   exploreSection.innerHTML = `
     <div class="explore-title">发现新单词</div>
-    <div class="explore-grid">${cards}</div>
+    <div style="padding:8px 16px;color:#888;font-size:13px;">
+      在搜索栏中输入任何英文单词，随时查词并收录到词块中。
+    </div>
   `;
 }
 
@@ -107,31 +78,11 @@ function renderTips() {
 }
 
 function renderHomeModules() {
-  const totalCollected = Object.keys(mockCollected).length;
+  const totalCollected = Object.keys(collectedWords).length;
   const pendingReview = totalCollected;
-  const todayAdded = 2; // mock
 
-  const wodWord = getWordOfDay();
-  const wodData = mockDictionary[wodWord];
-  const wodDef = wodData.meanings[0].definitions[0];
-  const isWodCollected = !!mockCollected[wodWord];
-
+  // Simple stats display
   homeModules.innerHTML = `
-    <!-- Word of the Day -->
-    <div class="wod-card">
-      <div class="wod-header">
-        <span class="wod-tag">📅 每日一词</span>
-        ${isWodCollected
-          ? `<button class="wod-collect-btn collected-state" disabled>已收录</button>`
-          : `<button class="wod-collect-btn" onclick="collectWod('${escAttr(wodWord)}')">收录</button>`
-        }
-      </div>
-      <div class="wod-word">${escHtml(wodData.word)}</div>
-      <div class="wod-phonetic">${escHtml(wodData.phonetic)}</div>
-      <div class="wod-definition">${escHtml(wodDef.definition)}</div>
-      ${wodDef.example ? `<div class="wod-example">"${escHtml(wodDef.example)}"</div>` : ''}
-    </div>
-
     <!-- Study Progress -->
     <div class="progress-stats-row">
       <div class="progress-stat">
@@ -139,8 +90,8 @@ function renderHomeModules() {
         <div class="progress-stat-label">总收词</div>
       </div>
       <div class="progress-stat">
-        <div class="progress-stat-value">${todayAdded}</div>
-        <div class="progress-stat-label">今日新增</div>
+        <div class="progress-stat-value">${blocksCache.length}</div>
+        <div class="progress-stat-label">词块</div>
       </div>
       <div class="progress-stat">
         <div class="progress-stat-value">${pendingReview}</div>
@@ -149,6 +100,7 @@ function renderHomeModules() {
     </div>
 
     <!-- Quick Review -->
+    ${totalCollected > 0 ? `
     <button class="quick-review-btn" onclick="switchToStudy()">
       <div class="quick-review-icon">⚡</div>
       <div class="quick-review-text">
@@ -157,17 +109,8 @@ function renderHomeModules() {
       </div>
       <div class="quick-review-arrow">›</div>
     </button>
+    ` : ''}
   `;
-}
-
-function collectWod(word) {
-  currentWord = word;
-  currentSelectedDefs = [];
-  const data = mockDictionary[word];
-  if (data && data.meanings[0] && data.meanings[0].definitions[0]) {
-    currentSelectedDefs = [data.meanings[0].definitions[0].definition];
-  }
-  openSheet(word);
 }
 
 function switchToStudy() {
@@ -182,7 +125,7 @@ function switchToStudy() {
 
 // ===== RECENT WORDS =====
 function renderRecentWords() {
-  const entries = Object.entries(mockCollected);
+  const entries = Object.entries(collectedWords);
   if (entries.length === 0) {
     recentSection.innerHTML = '';
     return;
@@ -193,7 +136,7 @@ function renderRecentWords() {
 
   let chips = '';
   recent.forEach(([word, info]) => {
-    chips += `<div class="recent-chip" onclick="quickSearch('${escAttr(word)}')">${escHtml(word)} <span class="chip-block">#${info.blockNumber}</span></div>`;
+    chips += `<div class="recent-chip" onclick="quickSearch('${escAttr(word)}')">${escHtml(word)} <span class="chip-block">#${info.blockNumber || '?'}</span></div>`;
   });
 
   recentSection.innerHTML = `
@@ -207,8 +150,8 @@ function quickSearch(word) {
   searchWord(word);
 }
 
-// Initial render
-renderHomepage();
+// Initial render — will be triggered by initApp()
+// renderHomepage();
 
 // ===== SEARCH =====
 searchInput.addEventListener('keydown', (e) => {
@@ -222,7 +165,6 @@ searchInput.addEventListener('keydown', (e) => {
 // Hide home modules and recent when searching
 searchInput.addEventListener('input', () => {
   if (!searchInput.value.trim()) {
-    // Restore homepage if input cleared
     renderHomepage();
     resultsArea.innerHTML = '';
     resultImageData = null;
@@ -232,12 +174,9 @@ searchInput.addEventListener('input', () => {
 async function searchWord(word) {
   currentWord = word;
   currentSelectedDefs = [];
+  currentDictResult = null;
 
-  if (mockCollected[word]) {
-    mockCollected[word].hitCount++;
-  }
-
-  // Hide home modules + recent + explore + tips while showing results
+  // Hide home modules while showing results
   homeModules.innerHTML = '';
   recentSection.innerHTML = '';
   exploreSection.innerHTML = '';
@@ -245,19 +184,25 @@ async function searchWord(word) {
   resultImageData = null;
   showSkeleton();
 
-  // Check local dictionary first
-  if (mockDictionary[word]) {
-    setTimeout(() => showResults(word, mockDictionary[word], 'local'), 200);
-    return;
-  }
-
-  // Fallback to API
   try {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
-    if (!res.ok) throw new Error('Not found');
-    const data = await res.json();
-    showResults(word, data[0], 'api');
-  } catch (err) {
+    // Call backend dictionary lookup (also increments hit_count if collected)
+    const data = await DictionaryAPI.lookup(word);
+    currentDictResult = data;
+
+    // If word is collected, update local cache hit count
+    if (data.isCollected && collectedWords[word]) {
+      collectedWords[word].hitCount = data.hitCount;
+    }
+
+    if (data.meanings && data.meanings.length > 0) {
+      showResults(word, data);
+    } else if (data.error) {
+      showError();
+    } else {
+      showError();
+    }
+  } catch (e) {
+    console.error('Search failed:', e);
     showError();
   }
 }
@@ -276,45 +221,28 @@ function showSkeleton() {
   `;
 }
 
-function showResults(word, data, source) {
-  const isCollected = !!mockCollected[word];
-  const collectedInfo = mockCollected[word];
+function showResults(word, data) {
+  const isCollected = data.isCollected || !!collectedWords[word];
+  const collectedInfo = collectedWords[word];
 
   // Audio URL
-  let audioUrl = '';
-  if (source === 'local') {
-    audioUrl = data.audioUrl || '';
-  } else if (data.phonetics) {
-    for (const p of data.phonetics) { if (p.audio) { audioUrl = p.audio; break; } }
-  }
+  let audioUrl = data.audioUrl || '';
   currentAudioUrl = audioUrl;
 
   // Phonetic text
-  let phoneticText = '';
-  if (source === 'local') {
-    phoneticText = data.phonetic || '';
-  } else {
-    phoneticText = data.phonetic || '';
-    if (!phoneticText && data.phonetics) {
-      for (const p of data.phonetics) { if (p.text) { phoneticText = p.text; break; } }
-    }
-  }
+  let phoneticText = data.phonetic || '';
 
   // Build meanings with checkboxes
   let meaningsHtml = '';
   const meanings = data.meanings || [];
   meanings.forEach((meaning, mi) => {
     if (mi > 0) meaningsHtml += '<div class="meaning-divider"></div>';
-    let posLabel = '';
-    if (source === 'local') {
-      posLabel = meaning.partOfSpeech;
-    } else {
-      posLabel = posTranslation[meaning.partOfSpeech.toLowerCase()] || meaning.partOfSpeech;
-    }
+    // Convert English POS to abbreviation for display
+    let posLabel = posToAbbr(meaning.partOfSpeech);
     meaningsHtml += `<div class="meaning-group">`;
     meaningsHtml += `<div class="pos-badge">${escHtml(posLabel)}</div>`;
 
-    const defs = meaning.definitions.slice(0, 3);
+    const defs = (meaning.definitions || []).slice(0, 3);
     defs.forEach((def, di) => {
       const defKey = `${mi}-${di}`;
       meaningsHtml += `
@@ -332,12 +260,9 @@ function showResults(word, data, source) {
     meaningsHtml += `</div>`;
   });
 
-  // API note
-  const apiNote = source === 'api' ? `<div style="font-size:12px;color:#CCC;margin-bottom:12px;padding:6px 10px;background:#F5F5F5;border-radius:8px;">📡 来自在线词典（英文释义）</div>` : '';
-
   let collectedBadge = '';
-  if (isCollected) {
-    collectedBadge = `<div class="collected-badge">✦ 已收录 · Block #${collectedInfo.blockNumber} · 已查${collectedInfo.hitCount}次</div>`;
+  if (isCollected && collectedInfo) {
+    collectedBadge = `<div class="collected-badge">❆ 已收录 · Block #${collectedInfo.blockNumber || '?'} · 已查${collectedInfo.hitCount}次</div>`;
   }
 
   let buttonHtml = isCollected
@@ -358,7 +283,6 @@ function showResults(word, data, source) {
       </div>
       <div class="result-image-area" id="resultImageArea" style="display:none"></div>
       ${collectedBadge}
-      ${apiNote}
       ${meaningsHtml}
       ${buttonHtml}
     </div>
@@ -367,7 +291,6 @@ function showResults(word, data, source) {
 
 function toggleDefCheck(defText, key) {
   const item = document.getElementById('defItem-' + key);
-  const cb = document.getElementById('defCb-' + key);
   if (!item) return;
   const isChecked = item.classList.contains('checked');
   if (isChecked) {
@@ -411,7 +334,7 @@ resultImageInput.addEventListener('change', (e) => {
       area.style.display = 'block';
       area.innerHTML = `
         <img src="${ev.target.result}" class="result-image-preview" alt="单词图片">
-        <button class="result-image-remove" onclick="removeResultImage()">✕</button>
+        <button class="result-image-remove" onclick="removeResultImage()">\u2715</button>
       `;
     }
   };
@@ -483,73 +406,120 @@ function resetImageUpload() {
   imageFileInput.value = '';
 }
 
-btnConfirm.addEventListener('click', () => {
+// ===== COLLECT WORD (calls backend) =====
+btnConfirm.addEventListener('click', async () => {
   if (!currentWord) return;
 
-  const existingBlocks = Object.values(mockCollected).map(v => v.blockNumber);
-  const maxBlock = existingBlocks.length > 0 ? Math.max(...existingBlocks) : 0;
-  const wordsInLastBlock = Object.values(mockCollected).filter(v => v.blockNumber === maxBlock).length;
-  const blockNum = wordsInLastBlock >= settingsState.blockSize ? maxBlock + 1 : (maxBlock || 1);
+  btnConfirm.disabled = true;
+  btnConfirm.textContent = '收录中...';
 
-  // Determine selected definitions to store
-  let defsToStore = [];
-  const dictData = mockDictionary[currentWord];
-  if (currentSelectedDefs.length > 0) {
-    // Map each selected definition text to {pos, def} using dictionary
-    currentSelectedDefs.forEach(defText => {
-      let pos = '';
-      if (dictData) {
-        for (const m of dictData.meanings) {
-          if (m.definitions.some(d => d.definition === defText)) {
-            pos = m.partOfSpeech;
-            break;
+  try {
+    // Build definitions to send to backend
+    let defsToSend = [];
+    const dictResult = currentDictResult;
+
+    if (currentSelectedDefs.length > 0) {
+      // Map each selected definition text to backend format
+      currentSelectedDefs.forEach(defText => {
+        let pos = '';
+        let example = '';
+        if (dictResult && dictResult.meanings) {
+          for (const m of dictResult.meanings) {
+            const found = m.definitions.find(d => d.definition === defText);
+            if (found) {
+              pos = m.partOfSpeech || '';
+              example = found.example || '';
+              break;
+            }
           }
         }
+        defsToSend.push({
+          part_of_speech: pos,
+          definition: defText,
+          example: example,
+          is_custom: false,
+        });
+      });
+    } else if (dictResult && dictResult.meanings && dictResult.meanings[0]) {
+      // Auto-collect first definition
+      const m = dictResult.meanings[0];
+      const d = m.definitions[0];
+      if (d) {
+        defsToSend.push({
+          part_of_speech: m.partOfSpeech || '',
+          definition: d.definition,
+          example: d.example || '',
+          is_custom: false,
+        });
       }
-      defsToStore.push({pos, def: defText});
+    }
+
+    const result = await WordsAPI.collect({
+      word: currentWord,
+      phonetic: dictResult?.phonetic || '',
+      audio_url: dictResult?.audioUrl || '',
+      custom_note: sheetNote.value.trim() || null,
+      definitions: defsToSend,
     });
-  } else {
-    // Auto-collect first definition if none selected
-    if (dictData && dictData.meanings[0] && dictData.meanings[0].definitions[0]) {
-      defsToStore = [{pos: dictData.meanings[0].partOfSpeech, def: dictData.meanings[0].definitions[0].definition}];
-    }
+
+    // Update local cache
+    collectedWords[currentWord] = {
+      id: result.id,
+      blockNumber: result.block_number,
+      blockId: result.block_id,
+      hitCount: result.hit_count,
+      customNote: result.custom_note || '',
+      addedAt: new Date(result.added_at).getTime(),
+      selectedDefinitions: (result.definitions || []).map(d => ({
+        id: d.id,
+        pos: posToAbbr(d.part_of_speech),
+        def: d.definition,
+        example: d.example || '',
+        isCustom: d.is_custom,
+        sortOrder: d.sort_order,
+      })),
+      photos: [],
+      phonetic: result.phonetic || '',
+      audioUrl: result.audio_url || '',
+    };
+
+    closeAllSheets();
+    showToast(`已收录到 Block #${result.block_number}`);
+
+    // Refresh blocks cache
+    refreshBlocks();
+
+    // Update result card to show collected state
+    setTimeout(() => {
+      const resultCard = document.getElementById('resultCard');
+      if (resultCard) {
+        resultCard.classList.add('collected');
+        const phoneticRow = resultCard.querySelector('.phonetic-row');
+        if (phoneticRow && !resultCard.querySelector('.collected-badge')) {
+          const badge = document.createElement('div');
+          badge.className = 'collected-badge';
+          badge.innerHTML = `❆ 已收录 · Block #${result.block_number} · 已查1次`;
+          phoneticRow.after(badge);
+        }
+        const btn = resultCard.querySelector('.btn-collect');
+        if (btn) {
+          btn.className = 'btn-collect btn-collected-state';
+          btn.disabled = true;
+          btn.textContent = '已收录';
+          btn.onclick = null;
+        }
+      }
+    }, 300);
+
+  } catch (e) {
+    let msg = '收录失败，请重试';
+    if (e.status === 409) msg = '该单词已收录';
+    showToast(msg);
+    console.error('Collect failed:', e);
+  } finally {
+    btnConfirm.disabled = false;
+    btnConfirm.textContent = '确认收录';
   }
-
-  mockCollected[currentWord] = {
-    blockNumber: blockNum,
-    hitCount: mockCollected[currentWord] ? mockCollected[currentWord].hitCount : 1,
-    customNote: sheetNote.value.trim(),
-    addedAt: Date.now(),
-    selectedDefinitions: defsToStore,
-    photos: [],
-  };
-
-  closeAllSheets();
-  showToast(`已收录到 Block #${blockNum}`);
-
-  // Update WOD button if this was the WOD word
-  renderHomeModules();
-
-  setTimeout(() => {
-    const resultCard = document.getElementById('resultCard');
-    if (resultCard) {
-      resultCard.classList.add('collected');
-      const phoneticRow = resultCard.querySelector('.phonetic-row');
-      if (phoneticRow && !resultCard.querySelector('.collected-badge')) {
-        const badge = document.createElement('div');
-        badge.className = 'collected-badge';
-        badge.innerHTML = `✦ 已收录 · Block #${blockNum} · 已查1次`;
-        phoneticRow.after(badge);
-      }
-      const btn = resultCard.querySelector('.btn-collect');
-      if (btn) {
-        btn.className = 'btn-collect btn-collected-state';
-        btn.disabled = true;
-        btn.textContent = '已收录';
-        btn.onclick = null;
-      }
-    }
-  }, 300);
 });
 
 // ===== TOAST =====
@@ -587,5 +557,3 @@ function escAttr(str) {
   }, { passive: true });
   handle.addEventListener('touchend', () => { dragStartY = null; }, { passive: true });
 });
-
-
