@@ -1,0 +1,38 @@
+name: Combine Parts and Create index.html
+
+on:
+  push:
+    paths:
+      - 'frontend/parts/part1.txt'
+      - 'frontend/parts/part2.txt'
+      - 'frontend/parts/part3.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  combine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Combine parts into index.html
+        run: |
+          cat frontend/parts/part1.txt frontend/parts/part2.txt frontend/parts/part3.txt > frontend/index.html
+          echo "Combined file size: $(wc -c < frontend/index.html) bytes"
+          echo "Combined file lines: $(wc -l < frontend/index.html)"
+
+      - name: Remove parts directory
+        run: rm -rf frontend/parts/
+
+      - name: Commit and push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add frontend/index.html
+          git rm -r --cached frontend/parts/ 2>/dev/null || true
+          git commit -m "fix: restore original full source code (4177 lines, 118KB) via Actions"
+          git push
