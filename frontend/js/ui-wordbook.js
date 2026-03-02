@@ -20,7 +20,7 @@ wbFilterInput.addEventListener('input', renderWordbook);
 
 function renderWordbook() {
   const filter = wbFilterInput.value.trim().toLowerCase();
-  const entries = Object.entries(mockCollected);
+  const entries = Object.entries(collectedWords);
   const filtered = filter ? entries.filter(([word]) => word.includes(filter)) : entries;
 
   wbCountBadge.textContent = `${entries.length} 个单词`;
@@ -43,15 +43,11 @@ function renderWordbook() {
 
   let html = '';
   filtered.forEach(([word, info]) => {
-    // Get phonetic and definition from dictionary
-    const dictData = mockDictionary[word];
-    const phonetic = dictData ? dictData.phonetic : '';
-    // Build definition preview from selectedDefinitions or dictionary
+    const phonetic = info.phonetic || '';
+    // Build definition preview from selectedDefinitions
     let defPreview = '';
     if (info.selectedDefinitions && info.selectedDefinitions.length > 0) {
       defPreview = info.selectedDefinitions.map(d => typeof d === 'object' ? d.def : d).join('；');
-    } else if (dictData && dictData.meanings.length > 0) {
-      defPreview = dictData.meanings[0].definitions[0].definition;
     }
     const noteBadge = info.customNote ? `<span class="wb-note-badge">📝 ${escHtml(info.customNote)}</span>` : '';
 
@@ -64,7 +60,7 @@ function renderWordbook() {
           </div>
           <div class="wb-def-preview">${escHtml(defPreview)}</div>
           <div class="wb-card-bottom">
-            <span class="wb-block-badge">Block #${info.blockNumber}</span>
+            <span class="wb-block-badge">Block #${info.blockNumber || '?'}</span>
             <span class="wb-hit-badge">🔥 ${info.hitCount}次</span>
             ${noteBadge}
           </div>
@@ -80,20 +76,19 @@ function renderWordbook() {
 let currentDetailWord = '';
 
 function openWordDetail(word) {
-  const info = mockCollected[word];
+  const info = collectedWords[word];
   if (!info) return;
   currentDetailWord = word;
 
-  const dictData = mockDictionary[word];
-  const phonetic = dictData ? dictData.phonetic : '';
-  const audioUrl = dictData ? dictData.audioUrl : '';
+  const phonetic = info.phonetic || '';
+  const audioUrl = info.audioUrl || '';
 
   // Selected definitions (with pos tags and add button)
   let selectedDefsHtml = '';
   if (info.selectedDefinitions && info.selectedDefinitions.length > 0) {
     selectedDefsHtml = info.selectedDefinitions.map(d => {
       if (typeof d === 'object') {
-        const isCustom = d.custom === true;
+        const isCustom = d.isCustom === true;
         const chipClass = isCustom ? 'wd-selected-chip custom-def' : 'wd-selected-chip';
         const customIcon = isCustom ? '<span class="chip-custom-icon">✏️</span>' : '';
         const customTag = isCustom ? '<span class="chip-custom-tag">我的释义</span>' : '';
@@ -104,37 +99,21 @@ function openWordDetail(word) {
   }
   selectedDefsHtml += `<button class="wd-add-def-btn" onclick="openDefSheet('${escAttr(word)}')">+ 新增释义</button>`;
 
-  // Full definitions from dictionary
-  let allDefsHtml = '';
-  if (dictData) {
-    dictData.meanings.forEach(m => {
-      allDefsHtml += `<div class="wd-def-group"><div class="wd-pos-tag">${escHtml(m.partOfSpeech)}</div>`;
-      m.definitions.forEach(d => {
-        allDefsHtml += `<div class="wd-def-item"><div class="wd-def-text">${escHtml(d.definition)}</div>`;
-        if (d.example) allDefsHtml += `<div class="wd-def-example">"${escHtml(d.example)}"</div>`;
-        allDefsHtml += `</div>`;
-      });
-      allDefsHtml += `</div>`;
-    });
-  }
-
   // Note
   const noteHtml = info.customNote
     ? `<div class="wd-note-content">${escHtml(info.customNote)}</div>`
-    : `<div class="wd-note-empty">点击下方“编辑笔记”添加你的学习笔记</div>`;
+    : `<div class="wd-note-empty">点击下方"编辑笔记"添加你的学习笔记</div>`;
 
-  // Photos gallery (multiple) with lightbox + add card
+  // Photos gallery (from backend)
   const photos = info.photos || [];
   let photoHtml = '';
   if (photos.length > 0) {
     photoHtml = `<div class="wd-photo-gallery" id="photoGallery">`;
-    photos.forEach((url, i) => {
+    photos.forEach((p, i) => {
+      const url = typeof p === 'object' ? p.url : p;
       photoHtml += `<img class="wd-photo-thumb" src="${url}" alt="场景图片" onclick="openLightbox(${i})">`;
     });
     photoHtml += `<div class="wd-photo-add-card" onclick="document.getElementById('wdPhotoInput').click()"><span class="add-icon">+</span><span class="add-text">添加</span></div>`;
-    if (photos.length > 3) {
-      photoHtml += `<div class="wd-photo-scroll-hint" onclick="document.getElementById('photoGallery').scrollBy({left:160,behavior:'smooth'})">›</div>`;
-    }
     photoHtml += `</div>`;
   } else {
     photoHtml = `<div class="wd-photo-placeholder"><div class="wd-photo-add-card" onclick="document.getElementById('wdPhotoInput').click()"><span class="add-icon">+</span><span class="add-text">添加场景图片</span></div></div>`;
@@ -161,12 +140,6 @@ function openWordDetail(word) {
       <div><button class="wd-add-def-btn" onclick="openDefSheet('${escAttr(word)}')">+ 新增释义</button></div>
     </div>`}
 
-    ${allDefsHtml ? `
-    <div class="wd-section">
-      <div class="wd-section-title">完整释义</div>
-      ${allDefsHtml}
-    </div>` : ''}
-
     <div class="wd-section">
       <div class="wd-section-title">笔记</div>
       ${noteHtml}
@@ -181,7 +154,7 @@ function openWordDetail(word) {
       <div class="wd-section-title">学习信息</div>
       <div class="wd-info-grid">
         <div class="wd-info-card">
-          <div class="wd-info-value">#${info.blockNumber}</div>
+          <div class="wd-info-value">#${info.blockNumber || '?'}</div>
           <div class="wd-info-label">词块</div>
         </div>
         <div class="wd-info-card">
@@ -197,8 +170,8 @@ function openWordDetail(word) {
 
     <div class="wd-section">
       <div class="wd-actions">
-        <button class="wd-action-btn secondary" onclick="editWordNote('${escAttr(word)}')">✏️ 编辑笔记</button>
-        <button class="wd-action-btn danger" onclick="removeWord('${escAttr(word)}')">移出词块</button>
+        <button class="wd-action-btn secondary" onclick="editWordNote('${escAttr(word)}')">\u270f\ufe0f 编辑笔记</button>
+        <button class="wd-action-btn danger" onclick="removeWord('${escAttr(word)}')">\u79fb出词块</button>
       </div>
     </div>
   `;
@@ -210,38 +183,54 @@ function closeWordDetail() {
   wordDetailPage.classList.remove('open');
 }
 
-function editWordNote(word) {
-  const info = mockCollected[word];
+async function editWordNote(word) {
+  const info = collectedWords[word];
   if (!info) return;
   const newNote = prompt('编辑笔记：', info.customNote || '');
   if (newNote !== null) {
-    info.customNote = newNote;
-    openWordDetail(word); // refresh
-    showToast('笔记已更新');
+    try {
+      await WordsAPI.update(info.id, { custom_note: newNote });
+      info.customNote = newNote;
+      openWordDetail(word); // refresh
+      showToast('笔记已更新');
+    } catch (e) {
+      showToast('更新失败，请重试');
+      console.error('Update note failed:', e);
+    }
   }
 }
 
-function removeWord(word) {
-  if (confirm(`确定要将“${word}”从词块中移除吗？`)) {
-    delete mockCollected[word];
-    closeWordDetail();
-    renderWordbook();
-    renderHomepage();
-    renderStudy();
-    showToast('已移除');
+async function removeWord(word) {
+  if (confirm(`确定要将"${word}"从词块中移除吗？`)) {
+    const info = collectedWords[word];
+    if (!info) return;
+    try {
+      await WordsAPI.remove(info.id);
+      delete collectedWords[word];
+      closeWordDetail();
+      renderWordbook();
+      renderHomepage();
+      renderStudy();
+      refreshBlocks();
+      showToast('已移除');
+    } catch (e) {
+      showToast('删除失败，请重试');
+      console.error('Remove word failed:', e);
+    }
   }
 }
 
-// Handle photo upload in detail page (append to photos array)
+// Handle photo upload in detail page
 document.getElementById('wdPhotoInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file || !currentDetailWord) return;
   const reader = new FileReader();
   reader.onload = function(ev) {
-    const info = mockCollected[currentDetailWord];
+    const info = collectedWords[currentDetailWord];
     if (info) {
       if (!info.photos) info.photos = [];
-      info.photos.push(ev.target.result);
+      // For now, store locally (photo upload to backend can be done later)
+      info.photos.push({ url: ev.target.result });
       openWordDetail(currentDetailWord); // refresh
       showToast(`图片已添加（共 ${info.photos.length} 张）`);
     }
@@ -255,9 +244,9 @@ let lightboxPhotos = [];
 let lightboxIndex = 0;
 
 function openLightbox(index) {
-  const info = mockCollected[currentDetailWord];
+  const info = collectedWords[currentDetailWord];
   if (!info || !info.photos || !info.photos.length) return;
-  lightboxPhotos = info.photos;
+  lightboxPhotos = info.photos.map(p => typeof p === 'object' ? p.url : p);
   lightboxIndex = index;
   renderLightbox();
   document.getElementById('wdLightbox').classList.add('open');
@@ -278,47 +267,30 @@ function renderLightbox() {
 
 // ===== DEFINITION SHEET =====
 let defSheetWord = '';
-let defSheetCustomDefs = []; // temp custom defs added in sheet
+let defSheetCustomDefs = [];
 
 function openDefSheet(word) {
   defSheetWord = word;
   defSheetCustomDefs = [];
-  const info = mockCollected[word];
-  const dictData = mockDictionary[word];
-  const phonetic = dictData ? dictData.phonetic : '';
+  const info = collectedWords[word];
 
   document.getElementById('dsTitle').textContent = `添加释义 — ${word}`;
-  document.getElementById('dsPhonetic').textContent = phonetic;
+  document.getElementById('dsPhonetic').textContent = info ? info.phonetic : '';
 
-  // Build dictionary definitions list
+  // Build existing definitions list
   const existingDefs = (info && info.selectedDefinitions) ? info.selectedDefinitions : [];
   let listHtml = '';
-  if (dictData) {
-    dictData.meanings.forEach(m => {
-      m.definitions.forEach(d => {
-        const isAdded = existingDefs.some(ed => {
-          if (typeof ed === 'object') return ed.def === d.definition;
-          return ed === d.definition;
-        });
-        if (isAdded) {
-          listHtml += `<div class="def-sheet-item added">
-            <div class="ds-check checked">✓</div>
-            <span class="ds-pos grey">${escHtml(m.partOfSpeech)}</span>
-            <span class="ds-def grey">${escHtml(d.definition)}</span>
-            <span class="ds-status">已添加</span>
-          </div>`;
-        } else {
-          listHtml += `<div class="def-sheet-item" onclick="addDictDef(this, '${escAttr(m.partOfSpeech)}', '${escAttr(d.definition)}')">
-            <div class="ds-check selectable"></div>
-            <span class="ds-pos blue">${escHtml(m.partOfSpeech)}</span>
-            <span class="ds-def">${escHtml(d.definition)}</span>
-          </div>`;
-        }
-      });
-    });
-  }
+  existingDefs.forEach(d => {
+    listHtml += `<div class="def-sheet-item added">
+      <div class="ds-check checked">✓</div>
+      <span class="ds-pos grey">${escHtml(d.pos)}</span>
+      <span class="ds-def grey">${escHtml(d.def)}</span>
+      <span class="ds-status">已添加</span>
+    </div>`;
+  });
+
   if (!listHtml) {
-    listHtml = '<div style="padding:12px 14px;color:#BBB;font-size:13px;">无词典释义可选</div>';
+    listHtml = '<div style="padding:12px 14px;color:#BBB;font-size:13px;">暂无已收录释义</div>';
   }
   document.getElementById('dsDictList').innerHTML = listHtml;
   document.getElementById('dsMyCustomList').innerHTML = '';
@@ -334,50 +306,44 @@ function closeDefSheet() {
   document.getElementById('defSheet').classList.remove('open');
 }
 
-function addDictDef(el, pos, def) {
-  const info = mockCollected[defSheetWord];
-  if (!info) return;
-  if (!info.selectedDefinitions) info.selectedDefinitions = [];
-  // Check not already added
-  if (info.selectedDefinitions.some(d => typeof d === 'object' && d.def === def)) return;
-  info.selectedDefinitions.push({ pos, def });
-  // Update the item visually
-  el.classList.add('added');
-  el.style.pointerEvents = 'none';
-  el.querySelector('.ds-check').classList.remove('selectable');
-  el.querySelector('.ds-check').classList.add('checked');
-  el.querySelector('.ds-check').textContent = '✓';
-  el.querySelector('.ds-pos').classList.remove('blue');
-  el.querySelector('.ds-pos').classList.add('grey');
-  el.querySelector('.ds-def').classList.add('grey');
-  const statusEl = document.createElement('span');
-  statusEl.className = 'ds-status';
-  statusEl.textContent = '已添加';
-  el.appendChild(statusEl);
-  showToast('释义已添加');
-}
-
-function addSheetCustomDef() {
+async function addSheetCustomDef() {
   const pos = document.getElementById('dsCustomPos').value.trim() || 'n.';
   const def = document.getElementById('dsCustomDef').value.trim();
   if (!def) return;
-  const info = mockCollected[defSheetWord];
+  const info = collectedWords[defSheetWord];
   if (!info) return;
-  if (!info.selectedDefinitions) info.selectedDefinitions = [];
-  const customDef = { pos, def, custom: true };
-  info.selectedDefinitions.push(customDef);
-  defSheetCustomDefs.push(customDef);
-  // Render in sheet
-  renderSheetCustomDefs();
-  document.getElementById('dsCustomDef').value = '';
-  showToast('自定义释义已添加');
+
+  try {
+    // Call backend to add definition
+    const result = await WordsAPI.addDefinition(info.id, {
+      part_of_speech: posToFull[pos] || pos,
+      definition: def,
+      is_custom: true,
+    });
+
+    // Update local cache
+    info.selectedDefinitions.push({
+      id: result.id,
+      pos: posToAbbr(result.part_of_speech),
+      def: result.definition,
+      example: '',
+      isCustom: true,
+      sortOrder: result.sort_order,
+    });
+
+    defSheetCustomDefs.push(info.selectedDefinitions[info.selectedDefinitions.length - 1]);
+    renderSheetCustomDefs();
+    document.getElementById('dsCustomDef').value = '';
+    showToast('自定义释义已添加');
+  } catch (e) {
+    showToast('添加失败，请重试');
+    console.error('Add definition failed:', e);
+  }
 }
 
 function renderSheetCustomDefs() {
-  const info = mockCollected[defSheetWord];
-  const customDefs = info.selectedDefinitions.filter(d => d.custom === true);
   let html = '';
-  customDefs.forEach((d, i) => {
+  defSheetCustomDefs.forEach((d, i) => {
     html += `<div class="def-sheet-my-custom">
       <span class="mc-icon">✏️</span>
       <span class="mc-pos">${escHtml(d.pos)}</span>
@@ -389,20 +355,27 @@ function renderSheetCustomDefs() {
   document.getElementById('dsMyCustomList').innerHTML = html;
 }
 
-function deleteCustomDef(index) {
-  const info = mockCollected[defSheetWord];
-  const customDefs = info.selectedDefinitions.filter(d => d.custom === true);
-  const target = customDefs[index];
-  if (target) {
-    const idx = info.selectedDefinitions.indexOf(target);
+async function deleteCustomDef(index) {
+  const d = defSheetCustomDefs[index];
+  if (!d || !d.id) return;
+  const info = collectedWords[defSheetWord];
+  if (!info) return;
+
+  try {
+    await WordsAPI.deleteDefinition(info.id, d.id);
+    // Remove from local cache
+    const idx = info.selectedDefinitions.findIndex(sd => sd.id === d.id);
     if (idx > -1) info.selectedDefinitions.splice(idx, 1);
+    defSheetCustomDefs.splice(index, 1);
+    renderSheetCustomDefs();
+    showToast('已删除');
+  } catch (e) {
+    showToast('删除失败');
+    console.error('Delete definition failed:', e);
   }
-  renderSheetCustomDefs();
-  showToast('已删除');
 }
 
 function confirmDefSheet() {
   closeDefSheet();
   openWordDetail(defSheetWord); // refresh detail page
 }
-
